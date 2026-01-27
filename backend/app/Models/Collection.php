@@ -17,4 +17,9 @@ class Collection extends Model
         'name',
         'image_url',
     ];
+
+    public function Products()
+    {
+        return $this->hasMany(Products::class);
+    }
 }
