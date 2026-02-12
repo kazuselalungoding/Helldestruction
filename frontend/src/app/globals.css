@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@font-face {
+  font-family: bagos;
+  src: url('/assets/fonts/bagos/BagossStandardTRIAL-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: bagos;
+  src: url('/assets/fonts/bagos/BagossStandardTRIAL-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-bagos :bagos;
+  --color-primary-50: #ebebeb;
+  --color-primary-100: #c0c0c0;
+  --color-primary-200: #a1a1a1;
+  --color-primary-300: #767676;
+  --color-primary-400: #5c5c5c;
+  --color-primary-500: #333333;
+  --color-primary-600: #2e2e2e;
+  --color-primary-700: #242424;
+  --color-primary-800: #1c1c1c;
+  --color-primary-900: #151515;
+  
+  --color-neutral-50: #f7e7e9;
+  --color-neutral-100: #e7b6bc;
+  --color-neutral-200: #db929b;
+  --color-neutral-300: #cb606e;
+  --color-neutral-400: #c14151;
+  --color-neutral-500: #b11226;
+  --color-neutral-600: #a11023;
+  --color-neutral-700: #7e0d1b;
+  --color-neutral-800: #610a15;
+  --color-neutral-900: #4a0810;
+  
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+}

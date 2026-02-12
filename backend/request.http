@@ -1,0 +1,82 @@
+### Variables
+@baseUrl = http://localhost:8000/api
+@email = test@example.com
+@password = password123
+
+### Register User
+POST {{baseUrl}}/register
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Test User",
+    "email": "{{email}}",
+    "password": "{{password}}"
+}
+
+### Login User
+POST {{baseUrl}}/login
+Content-Type: application/json
+Accept: application/json
+
+{
+    "email": "{{email}}",
+    "password": "{{password}}"
+}
+
+### Get Authenticated User
+GET {{baseUrl}}/dashboard
+Content-Type: application/json
+Accept: application/json
+
+
+GET {{baseUrl}}/dashboard
+Content-Type: application/json
+Accept: application/json
+
+### Logout User
+POST {{baseUrl}}/logout
+Content-Type: application/json
+Accept: application/json
+
+### Register dengan Validation Error
+POST {{baseUrl}}/register
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Test",
+    "email": "invalid-email",
+    "password": "123"
+}
+
+### Login dengan Email Salah
+POST {{baseUrl}}/login
+Content-Type: application/json
+Accept: application/json
+
+{
+    "email": "wrong@example.com",
+    "password": "{{password}}"
+}
+
+### Login dengan Password Salah
+POST {{baseUrl}}/login
+Content-Type: application/json
+Accept: application/json
+
+{
+    "email": "{{email}}",
+    "password": "wrongpassword"
+}
+
+### Register Admin User (untuk testing role)
+POST {{baseUrl}}/register
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Admin User",
+    "email": "admin@example.com",
+    "password": "{{password}}"
+}
