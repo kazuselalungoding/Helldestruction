@@ -1,46 +1,44 @@
-import { csrf, login } from "../services";
-import { useAuthStore } from "@/stores/authStore";
-import { useRouter } from "next/navigation";
-import axios from "axios";
-import { useState } from "react";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function useLogin() {
-  const SetUser = useAuthStore((state) => state.SetUser);
   const router = useRouter();
+  const login = useAuthStore((state) => state.login);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const submit = async (email: string, password: string) => {
-    setError(null);
-    setIsLoading(true);
-    
     try {
-      await csrf();
-      const response = await login({ email, password });
+      console.log('[useLogin] Starting login...');
+      setIsLoading(true);
+      setError(null);
       
-      if (response?.data?.user) {
-        SetUser(response.data.user);
-        router.push("/dashboard");
-        return { success: true, data: response.data };
-      }
+      const success = await login(email, password);
+      console.log('[useLogin] Login result:', success);
       
-      return { success: false, error: "Login failed" };
-    } catch (error) {
-      if(axios.isAxiosError(error)) {
-        const message = error.response?.data?.message || "Login failed";
-        setError(message);
-        return { success: false, error: message };
+      if (success) {
+        console.log('[useLogin] Login successful, redirecting to dashboard...');
+        
+        // Force redirect using window.location for immediate effect
+        if (typeof window !== 'undefined') {
+          window.location.href = '/dashboard';
+        } else {
+          router.push('/dashboard');
+        }
       } else {
-        const message = "An unexpected error occurred";
-        setError(message);
-        return { success: false, error: message };
+        console.log('[useLogin] Login failed');
+        setError('Login failed. Please check your credentials.');
+        setIsLoading(false);
       }
-    } finally {
+    } catch (err: any) {
+      console.error('[useLogin] Error:', err);
+      setError(err?.response?.data?.message || 'An error occurred during login');
       setIsLoading(false);
     }
   };
-  
-  return { 
+
+  return {
     submit,
     error,
     isLoading,

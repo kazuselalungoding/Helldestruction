@@ -1,71 +1,33 @@
-import axios from "axios";
-import { ensureCsrfToken, refreshCsrfToken } from "./csrfHelper";
+import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL}`,
-  headers: {
-    "Accept": "application/json",
-    "Content-Type": "application/json",
-  }
-})
-
-export const apiAuth = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_API_URL}`,
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000',
   withCredentials: true,
   headers: {
-    "Accept": "application/json",
-    "Content-Type": "application/json",
-    "X-Requested-With": "XMLHttpRequest",
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
   },
 });
 
-// Request interceptor: ensure CSRF token before authenticated requests
-apiAuth.interceptors.request.use(
-  async (config) => {
-    // Skip CSRF for GET requests or if it's the CSRF endpoint itself
-    if (config.method === "get" || config.url?.includes("/sanctum/csrf-cookie")) {
-      return config;
-    }
-
-    // Ensure CSRF token is available for state-changing requests
-    try {
-      await ensureCsrfToken();
-    } catch (error) {
-      console.error("Failed to fetch CSRF token:", error);
-    }
-
-    return config;
+// Response interceptor
+api.interceptors.response.use(
+  (response) => {
+    console.log('[API] Response:', response.config.url, response.status);
+    return response;
   },
   (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// Response interceptor: handle 419 (CSRF token mismatch) errors
-apiAuth.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-
-    // If 419 (CSRF token mismatch) and haven't retried yet
-    if (error.response?.status === 419 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        // Refresh CSRF token and retry the request
-        await refreshCsrfToken();
-        return apiAuth(originalRequest);
-      } catch (csrfError) {
-        return Promise.reject(csrfError);
+    console.error('[API] Error:', error.response?.status, error.response?.data);
+    
+    // Don't auto-redirect on 401, let the component handle it
+    if (error.response?.status === 419) {
+      // CSRF token mismatch - reload page
+      if (typeof window !== 'undefined') {
+        console.warn('[API] CSRF mismatch, reloading...');
+        window.location.reload();
       }
     }
-
-    // If 401 (Unauthenticated), could redirect to login
-    if (error.response?.status === 401) {
-      // You can dispatch a logout action or redirect here if needed
-      console.error("Unauthenticated request");
-    }
-
+    
     return Promise.reject(error);
   }
 );

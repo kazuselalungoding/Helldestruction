@@ -1,58 +1,43 @@
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { register, csrf } from "../services";
-import { RegisterPayload, AuthResponse } from "../types";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function useRegister() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [errors, setErrors] = useState<Record<string, string[]> | null>(null);
   const router = useRouter();
+  const { register, error: storeError, isLoading: storeLoading } = useAuthStore();
+  const [localError, setLocalError] = useState<string | null>(null);
 
-  const submit = async (payload: RegisterPayload) => {
-    setIsLoading(true);
-    setError(null);
-    setErrors(null);
-
+  const submit = async (name: string, email: string, password: string) => {
     try {
-      // Get CSRF token first
-      await csrf();
+      setLocalError(null);
+      
+      // Validate inputs
+      if (!name || !email || !password) {
+        setLocalError('All fields are required');
+        return;
+      }
 
-      // Make register request
-      const response = await register(payload);
-      const data: AuthResponse = response.data;
-
-      if (data.status) {
-        // Registration successful
-        router.push("/"); // Redirect to home or dashboard
-        return { success: true, data };
+      if (password.length < 8) {
+        setLocalError('Password must be at least 8 characters');
+        return;
+      }
+      
+      const success = await register(name, email, password);
+      
+      if (success) {
+        // Redirect to dashboard after successful registration
+        router.push('/dashboard');
       } else {
-        setError(data.message || "Registration failed");
-        if (data.errors) {
-          setErrors(data.errors);
-        }
-        return { success: false, error: data.message };
+        setLocalError(storeError || 'Registration failed');
       }
     } catch (err: any) {
-      const errorMessage =
-        err.response?.data?.message || "Registration failed. Please try again.";
-      const validationErrors = err.response?.data?.errors || null;
-
-      setError(errorMessage);
-      if (validationErrors) {
-        setErrors(validationErrors);
-      }
-
-      return { success: false, error: errorMessage };
-    } finally {
-      setIsLoading(false);
+      setLocalError(err.message || 'An error occurred during registration');
     }
   };
 
   return {
     submit,
-    isLoading,
-    error,
-    errors,
+    error: localError || storeError,
+    isLoading: storeLoading,
   };
 }

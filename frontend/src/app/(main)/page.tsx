@@ -1,19 +1,25 @@
 import Navbar from "@/components/layout/Navbar";
-import LoginForm from "@/features/auth/components/LoginForm";
+import Footer from "@/components/layout/Footer";
+import CardProduct from "@/components/ui/CardProduct";
+import NewDrop from "@/features/product/components/NewDrop";
 
 export default function Home() {
   return (
-    // <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
-    //   <div className="w-full max-w-md p-8 bg-white dark:bg-zinc-900 rounded-lg shadow-lg">
-    //     <h1 className="text-2xl font-bold mb-6 text-center text-black dark:text-white">
-    //       Login
-    //     </h1>
-    //     <LoginForm />
-    //   </div>
-    // </div>
     <div className="w-full h-full">
-      <Navbar color={true} />
-      <LoginForm/>
+      <div className="w-full h-full flex flex-col items-center justify-center pt-4">
+        <div className="w-full h-128 ">
+          <img
+            src="/assets/image/contoh.png"
+            className="w-full h-full object-cover rounded-xl"
+            alt=""
+          />
+        </div>
+        <h1 className="text-[clamp(2rem,9vw,9rem)] md:text-[clamp(2rem,10vw,9rem)] lg:text-[clamp(2rem,10vw,9rem)] font-bagos font-bold text-primary-800 text-center leading-none">
+          HELLDESTRUCTION
+        </h1>
+      </div>
+      <NewDrop />
+      {/* <CardProduct /> */}
     </div>
   );
 }

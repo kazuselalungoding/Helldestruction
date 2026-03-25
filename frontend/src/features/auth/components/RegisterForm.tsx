@@ -8,19 +8,30 @@ import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
   const router = useRouter();
-  const { submit, isLoading, error, errors } = useRegister();
+  const { submit, error, isLoading } = useRegister();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [localError, setLocalError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = await submit({ name, email, password });
-    
-    if (result.success) {
-      console.log("Registration successful!", result.data);
-      // User will be redirected automatically by the hook
+    setLocalError("");
+
+    // Validate password match
+    if (password !== passwordConfirmation) {
+      setLocalError("Passwords do not match");
+      return;
     }
+
+    // Validate password length
+    if (password.length < 8) {
+      setLocalError("Password must be at least 8 characters");
+      return;
+    }
+
+    await submit(name, email, password);
   };
 
   return (
@@ -30,9 +41,9 @@ export default function RegisterForm() {
       </h1>
       <div className="flex flex-col gap-8">
         {/* Error Message */}
-        {error && (
+        {(error || localError) && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            {error}
+            {localError || error}
           </div>
         )}
 
@@ -40,45 +51,36 @@ export default function RegisterForm() {
           onSubmit={handleSubmit}
           className="flex flex-col gap-6 justify-center items-center"
         >
-          <div className="w-full">
-            <TextField
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Full Name"
-              required
-            />
-            {errors?.name && (
-              <p className="text-red-600 text-sm mt-1">{errors.name[0]}</p>
-            )}
-          </div>
-
-          <div className="w-full">
-            <TextField
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email Address"
-              required
-            />
-            {errors?.email && (
-              <p className="text-red-600 text-sm mt-1">{errors.email[0]}</p>
-            )}
-          </div>
-
-          <div className="w-full">
-            <TextField
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              required
-              minLength={8}
-            />
-            {errors?.password && (
-              <p className="text-red-600 text-sm mt-1">{errors.password[0]}</p>
-            )}
-          </div>
+          <TextField
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Full Name"
+            required
+          />
+          <TextField
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email Address"
+            required
+          />
+          <TextField
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            required
+            minLength={8}
+          />
+          <TextField
+            type="password"
+            value={passwordConfirmation}
+            onChange={(e) => setPasswordConfirmation(e.target.value)}
+            placeholder="Confirm Password"
+            required
+            minLength={8}
+          />
 
           <Button 
             label={isLoading ? "SIGNING UP..." : "SIGN UP"} 
@@ -89,15 +91,18 @@ export default function RegisterForm() {
         </form>
 
         <div className="flex flex-col gap-8">
+          <hr className="w-full h-[2px] bg-black"/>
 
-          <hr className="w-full h-[2px] bg-pink-700"/>
-
-          <Button 
-            label="SIGN IN" 
-            type="button" 
-            size="large" 
-            onClick={() => router.push('/login')} 
-          />
+          <div className="text-center">
+            <span className="text-sm text-gray-600">Already have an account? </span>
+            <button
+              type="button"
+              onClick={() => router.push('/login')}
+              className="text-sm text-primary-700 underline font-medium"
+            >
+              Sign In
+            </button>
+          </div>
         </div>
       </div>
     </div>

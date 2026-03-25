@@ -1,21 +1,21 @@
-export type LoginPayload = {
+export interface LoginCredentials {
   email: string;
   password: string;
 };
 
-export type RegisterPayload = {
+export interface RegisterCredentials {
   name: string;
   email: string;
   password: string;
 };
 
-export type User = {
+export interface User {
   id: number;
   name: string;
   email: string;
 };
 
-export type AuthResponse = {
+export interface AuthResponse {
   status: boolean;
   message: string;
   user?: User;

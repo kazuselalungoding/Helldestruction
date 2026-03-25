@@ -57,6 +57,12 @@ class ProductsForm
                     FileUpload::make('image_url')
                         ->label('Product Image')
                         ->image()
+                        ->imageEditor()
+                        ->imageEditorAspectRatioOptions([
+                            '1:1' => '1:1',
+                            '4:3' => '4:3',
+                            '16:9' => '16:9',
+                        ])
                         ->disk('public')
                         ->directory('Products')
                         ->required()

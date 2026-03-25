@@ -45,6 +45,8 @@
   --color-neutral-700: #7e0d1b;
   --color-neutral-800: #610a15;
   --color-neutral-900: #4a0810;
+
+  --color-notification-50: #1E5BDE;
   
 }
 
@@ -60,4 +62,14 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   margin: 0;
   padding: 0;
+}
+
+body::-webkit-scrollbar, *::-webkit-scrollbar {
+  display: none;
+}
+
+body,
+* {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }

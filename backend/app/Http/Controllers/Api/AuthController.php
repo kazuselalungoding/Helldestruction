@@ -66,7 +66,7 @@ class AuthController extends Controller
                     'status' => false,
                     'message' => 'Validation error',
                     'errors' => $validateUser->errors()
-                ], 401);
+                ], 422);
             };
 
             

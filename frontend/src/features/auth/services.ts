@@ -1,14 +1,26 @@
-import { apiAuth } from "@/lib/api";
-import { LoginPayload, RegisterPayload } from "./types";
+import { api } from '@/lib/api';
+import { getCsrfCookie } from '@/lib/csrfHelper';
+import type { LoginCredentials, RegisterCredentials, AuthResponse } from './types';
 
-export const csrf = () => apiAuth.get("/sanctum/csrf-cookie");
+export const authService = {
+  async login(credentials: LoginCredentials): Promise<AuthResponse> {
+    await getCsrfCookie();
+    const response = await api.post<AuthResponse>('/api/login', credentials);
+    return response.data;
+  },
 
-export const register = (payload: RegisterPayload) =>
-  apiAuth.post("/api/register", payload);
+  async register(credentials: RegisterCredentials): Promise<AuthResponse> {
+    await getCsrfCookie();
+    const response = await api.post<AuthResponse>('/api/register', credentials);
+    return response.data;
+  },
 
-export const login = (payload: LoginPayload) =>
-  apiAuth.post("/api/login", payload);
+  async logout(): Promise<void> {
+    await api.post('/api/logout');
+  },
 
-export const logout = () => apiAuth.post("/api/logout");
-
-export const getUser = () => apiAuth.get("/api/user");
+  async getUser(): Promise<AuthResponse> {
+    const response = await api.get<AuthResponse>('/api/user');
+    return response.data;
+  },
+};

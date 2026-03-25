@@ -1,53 +1,48 @@
-import { csrf } from "@/features/auth/services";
+import { api } from './api';
 
 let csrfPromise: Promise<void> | null = null;
-let lastCsrfFetch = 0;
-const CSRF_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
+let lastFetchTime = 0;
+const CACHE_DURATION = 5000; // 5 seconds
 
-/**
- * Ensure CSRF token is available and fresh
- * This prevents multiple simultaneous CSRF requests
- */
-export async function ensureCsrfToken(): Promise<void> {
+export async function getCsrfCookie(): Promise<void> {
   const now = Date.now();
-  
-  // If CSRF was fetched recently, skip
-  if (now - lastCsrfFetch < CSRF_REFRESH_INTERVAL && lastCsrfFetch > 0) {
+
+  // Check if we recently fetched
+  if (now - lastFetchTime < CACHE_DURATION) {
+    console.log('[CSRF] Using cached token');
     return;
   }
 
-  // If there's already a pending CSRF request, wait for it
+  // Check if cookie already exists
+  if (typeof document !== 'undefined') {
+    const hasXsrfToken = document.cookie.includes('XSRF-TOKEN');
+    if (hasXsrfToken && now - lastFetchTime < 60000) {
+      console.log('[CSRF] Token already exists');
+      lastFetchTime = now;
+      return;
+    }
+  }
+
+  // If already fetching, return same promise
   if (csrfPromise) {
+    console.log('[CSRF] Reusing existing request');
     return csrfPromise;
   }
 
-  // Create new CSRF request
-  csrfPromise = csrf()
-    .then(() => {
-      lastCsrfFetch = Date.now();
-      csrfPromise = null;
-    })
-    .catch((error) => {
-      csrfPromise = null;
-      throw error;
+  try {
+    console.log('[CSRF] Fetching new token...');
+    csrfPromise = api.get('/sanctum/csrf-cookie').then(() => {
+      lastFetchTime = Date.now();
+      console.log('[CSRF] Token fetched successfully');
+      setTimeout(() => {
+        csrfPromise = null;
+      }, 100);
     });
 
-  return csrfPromise;
-}
-
-/**
- * Force refresh CSRF token
- */
-export async function refreshCsrfToken(): Promise<void> {
-  lastCsrfFetch = 0;
-  csrfPromise = null;
-  return ensureCsrfToken();
-}
-
-/**
- * Check if CSRF token should be refreshed
- */
-export function shouldRefreshCsrf(): boolean {
-  const now = Date.now();
-  return now - lastCsrfFetch >= CSRF_REFRESH_INTERVAL;
+    await csrfPromise;
+  } catch (error) {
+    console.error('[CSRF] Failed to fetch token:', error);
+    csrfPromise = null;
+    throw error;
+  }
 }

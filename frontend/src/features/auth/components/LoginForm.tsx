@@ -12,6 +12,11 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await submit(email, password);
+  };
+
   return (
     <div className="w-full h-full flex flex-col justify-center items-center gap-8">
       <h1 className="text-primary-700 font-bagos font-bold text-5xl">
@@ -26,10 +31,7 @@ export default function LoginForm() {
         )}
 
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            submit(email, password);
-          }}
+          onSubmit={handleSubmit}
           className="flex flex-col gap-6 justify-center items-center"
         >
           <TextField
