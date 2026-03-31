@@ -1,10 +1,10 @@
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000',
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   withCredentials: true,
   headers: {
-    'Accept': 'application/json',
+    Accept: 'application/json',
     'Content-Type': 'application/json',
     'X-Requested-With': 'XMLHttpRequest',
   },
@@ -13,21 +13,22 @@ export const api = axios.create({
 // Response interceptor
 api.interceptors.response.use(
   (response) => {
-    console.log('[API] Response:', response.config.url, response.status);
+    console.log('[API] Response:', response.config.url, response.status, response.data);
     return response;
   },
   (error) => {
-    console.error('[API] Error:', error.response?.status, error.response?.data);
-    
-    // Don't auto-redirect on 401, let the component handle it
+    console.error('[API] Full Error:', error);
+    console.error('[API] Message:', error.message);
+    console.error('[API] Status:', error.response?.status);
+    console.error('[API] Data:', error.response?.data);
+
     if (error.response?.status === 419) {
-      // CSRF token mismatch - reload page
       if (typeof window !== 'undefined') {
         console.warn('[API] CSRF mismatch, reloading...');
         window.location.reload();
       }
     }
-    
+
     return Promise.reject(error);
   }
 );

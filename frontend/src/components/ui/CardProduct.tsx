@@ -1,3 +1,6 @@
+import Link from "next/link";
+
+
 type size = "small" | "medium" | "large";
 
 interface CardProductProps {
@@ -6,6 +9,7 @@ interface CardProductProps {
   price?: number;
   isSoldOut?: boolean;
   imageUrl?: string;
+  productSlug?: string;
 }
 
 const SizeMap: Record<size, string> = {
@@ -20,10 +24,24 @@ export default function CardProduct({
   price,
   isSoldOut = false,
   imageUrl,
+  productSlug,
 }: CardProductProps) {
-  return (
-    <div
-      className={`${SizeMap[size]} aspect-square border border-neutral-500 font-bagos font-bold flex flex-col`}
+
+
+  // const router = useRouter();
+
+  // const handleClick = () => {
+  //   if (isSoldOut || !productId) return;
+  //   router.push(`/products/${productId}`);
+
+  // }
+
+  const cardContent = (
+        <div
+      //onClick={handleClick}
+      className={`${SizeMap[size]} aspect-square border border-neutral-500 font-bagos font-bold flex flex-col ${
+        !isSoldOut ? 'cursor-pointer' : 'cursor-not-allowed'
+      }`}
     >
       <div className="w-full h-14 flex justify-between items-start px-2 py-1">
         <div>
@@ -49,5 +67,15 @@ export default function CardProduct({
         />
       </div>
     </div>
+  );
+
+  if(isSoldOut || !productSlug) {
+    return cardContent;
+  }
+
+  return (
+    <Link href={`/products/${productSlug}`}>
+      {cardContent}
+    </Link>
   );
 }

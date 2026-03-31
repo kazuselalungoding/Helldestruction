@@ -20,6 +20,7 @@ export default function NewDrop() {
         return (
           <CardProduct
             key={product.id}
+            productSlug={product.slug}
             productName={product.name}
             price={Number(product.price)}
             isSoldOut={isSoldOut}

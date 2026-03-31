@@ -18,6 +18,7 @@ class ProductsTable
         return $table
             ->columns([
                 TextColumn::make('name')->label('Product Name'),
+                TextColumn::make('slug')->label('Slug')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('Collection.name')->label('Collection'),
                 TextColumn::make('Categories.name')->label('Category'),
                 ImageColumn::make('image_url')->label('Image')->disk('public'),

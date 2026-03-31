@@ -3,10 +3,27 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Str;
 class Products extends Model
 {
-    protected $fillable = ['name', 'image_url','description','price','collection_id','category_id'];
+    protected $fillable = ['name','slug', 'image_url','description','price','collection_id','category_id'];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($product) {
+            if (empty($product->slug)) {
+                $product->slug = Str::slug($product->name);
+            }
+        });
+
+        static::updating(function ($product) {
+            if (empty($product->slug)) {
+                $product->slug = Str::slug($product->name);
+            }
+        });
+    }
 
     public function Collection()
     {

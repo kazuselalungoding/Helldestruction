@@ -3,6 +3,7 @@ import CardProduct from "@/components/ui/CardProduct"
 type Product = {
   id: number;
   name: string;
+  slug: string;
   image_url: string;
   price: number;
   product_variants?: {
@@ -24,6 +25,7 @@ export default function Product({ products }: ProductProps) {
         return (
           <CardProduct
             key={product.id}
+            productSlug={product.slug}
             size="medium"
             productName={product.name}
             price={Number(product.price)}

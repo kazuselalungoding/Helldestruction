@@ -11,7 +11,7 @@ export const getNewDropProducts = async () => {
     return response.data;
 }
 
-export const getProductById = async (id: number | string) => {
-    const response = await publicApi.get(`/api/products/${id}`);
+export const getProductBySlug = async (slug: string) => {
+    const response = await publicApi.get(`/api/products/${slug}`);
     return response.data;
 }

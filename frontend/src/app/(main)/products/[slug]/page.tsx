@@ -6,9 +6,9 @@ import ProductDetail from "@/features/product/components/ProductDetail";
 
 export default function ProductDetailPage() {
   const params = useParams();
-  const id = params.id as string;
+  const slug = params.slug as string;
 
-  const { product, loading, error } = useProductDetail(id);
+  const { product, loading, error } = useProductDetail(slug);
 
   if (loading) return <p className="p-4">Loading product...</p>;
   if (error) return <p className="p-4 text-red-500">{error}</p>;

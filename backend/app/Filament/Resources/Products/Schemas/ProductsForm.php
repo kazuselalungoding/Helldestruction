@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
+use Illuminate\Support\Str;
 use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Forms\Components\Select;
 use Illuminate\Support\Facades\Storage;
 use Filament\Forms\Components\TextInput;
@@ -22,7 +24,16 @@ class ProductsForm
                 Section::make()
                 ->columnSpanFull()
                 ->schema([
-                    TextInput::make('name')->required(),
+                    TextInput::make('name')
+                        ->required()
+                        ->live(onBlur: true)
+                        ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
+
+                    TextInput::make('slug')
+                        ->required()
+                        ->unique(ignoreRecord: true)
+                        ->disabled(),
+
                     Select::make('collection_id')
                         ->label('Collection Of Product')
                         ->relationship('collection', 'name')

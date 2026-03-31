@@ -9,6 +9,7 @@ export interface Product {
   collection_id: number;
   category_id: number;
   name: string;
+  slug: string;
   image_url: string;
   description: string;
   price: number;

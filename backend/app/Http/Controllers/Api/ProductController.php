@@ -35,21 +35,17 @@ class ProductController extends Controller
         ], 200);
     }
 
-    public function show($id)
+    public function show($slug)
     {
-        if (!$id) {
-            return response()->json(['message' => 'Product ID is required'], 400);
-        }
-        if (!is_numeric($id)) {
-            return response()->json(['message' => 'Product ID must be numeric'], 400);
+        if(!$slug){
+            return response()->json(['message' => 'Product is slug required'], 400);
         }
 
-        if (!Products::find($id)) {
-            return response()->json(['message' => 'Product not found'], 404);
-        }
-
-        $product = Products::with(['Collection:id,name,image_url', 'Categories:id,name', 'ProductVariants:id,product_id,size,quantity'])->find($id);
-        return response()->json(['status' => 'success', 'data' => $product], 200);
+        $product = Products::with(['Collection:id,name,image_url', 'Categories:id,name', 'ProductVariants:id,product_id,size,quantity'])->where('slug', $slug)->first();
+        return response()->json([
+            'status' => 'success', 
+            'data' => $product
+        ], 200);
     }
 
 
@@ -77,7 +73,7 @@ class ProductController extends Controller
         }
 
         $products = Products::select([
-            'id','category_id','collection_id','name','image_url','price'
+            'id','category_id','collection_id','name','slug','image_url','price'
         ])->with(['Categories:id,name', 'ProductVariants:id,product_id,size,quantity'])
             ->where('collection_id', $latestCollection->id)
             ->get();
