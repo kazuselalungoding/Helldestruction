@@ -16,8 +16,15 @@ class AuthController extends Controller
         try{
             $validateUser = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
+                'email' => 'required|string|email|max:255|unique:users,email',
                 'password' => 'required|string|min:8',
+            ],  [
+                'email.unique' => 'The email has already been taken.',
+                'email.required' => 'The email field is required.',
+                'email.email' => 'The email must be a valid email address.',
+                'password.required' => 'The password field is required.',
+                'password.min' => 'The password must be at least 8 characters.',
+                'name.required' => 'The name field is required.',
             ]);
 
             if($validateUser->fails()){
@@ -25,7 +32,7 @@ class AuthController extends Controller
                     'status' => false,
                     'message' => 'Validation error',
                     'errors' => $validateUser->errors()
-                ], 401);
+                ], 422);
             }
 
             $user = User::create([

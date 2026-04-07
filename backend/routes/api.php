@@ -9,18 +9,18 @@ use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\XenditWebhookController;
+use App\Http\Controllers\Api\OrderController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 
 // Route::get('/products/search', [ProductController::class, 'search']);
-Route::middleware('throttle:60,1')->group(function () {
-    Route::get('/products/new-drop', [ProductController::class, 'newDrop']);
-    Route::get('/products/{slug}', [ProductController::class, 'show']);
-    Route::get('/products', [ProductController::class, 'index']);
-});
+Route::get('/products/new-drop', [ProductController::class, 'newDrop']);
+Route::get('/products/{slug}', [ProductController::class, 'show']);
+Route::get('/products', [ProductController::class, 'index']);
 
 Route::get('/category', [CategoryController::class, 'index']);
+Route::get('/category/{slug}', [CategoryController::class, 'show']);
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -34,6 +34,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/cart/add', [CartController::class, 'addToCart']);
     Route::delete('/cart/remove/{id}', [CartController::class, 'removeFromCart']);
 
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/orders/{external_id}', [OrderController::class, 'show']);
+
     Route::get('/address', [AddressController::class, 'index']);
     Route::post('/address', [AddressController::class, 'store']);
     Route::get('/address/{id}', [AddressController::class, 'show']);
@@ -42,6 +45,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/checkout', [CheckoutController::class, 'checkout']);
 
+    Route::get('/payment',[PaymentController::class, 'index']);
+    Route::get('/payment/{id}', [PaymentController::class, 'show']);
     Route::post('/payment/{orderId}', [PaymentController::class, 'createInvoice']);
-    });
-    Route::post('/xendit/webhook', [XenditWebhookController::class, 'handleInvoiceWebhook']);
+
+
+});
+Route::post('/xendit/webhook', [XenditWebhookController::class, 'handleInvoiceWebhook']);

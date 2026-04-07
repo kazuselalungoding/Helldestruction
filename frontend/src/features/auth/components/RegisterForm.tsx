@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useRegister from "../hooks/useRegister";
 import Button from "@/components/ui/Button";
 import TextField from "@/components/ui/TextField";
+import NotificationCard from "@/components/ui/NotificationCard";
 import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
@@ -14,10 +15,21 @@ export default function RegisterForm() {
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [localError, setLocalError] = useState("");
+  const [showErrorCard, setShowErrorCard] = useState(false);
+
+  useEffect(() => {
+    if (error || localError) {
+      setShowErrorCard(true);
+      return;
+    }
+
+    setShowErrorCard(false);
+  }, [error, localError]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLocalError("");
+    setShowErrorCard(false);
 
     // Validate password match
     if (password !== passwordConfirmation) {
@@ -36,17 +48,18 @@ export default function RegisterForm() {
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center gap-8">
+      <NotificationCard
+        title="Registration Failed"
+        message={localError || error || undefined}
+        variant="error"
+        show={showErrorCard}
+        onClose={() => setShowErrorCard(false)}
+      />
+
       <h1 className="text-primary-700 font-bagos font-bold text-5xl">
         SIGN UP
       </h1>
       <div className="flex flex-col gap-8">
-        {/* Error Message */}
-        {(error || localError) && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            {localError || error}
-          </div>
-        )}
-
         <form
           onSubmit={handleSubmit}
           className="flex flex-col gap-6 justify-center items-center"
@@ -91,7 +104,7 @@ export default function RegisterForm() {
         </form>
 
         <div className="flex flex-col gap-8">
-          <hr className="w-full h-[2px] bg-black"/>
+          <hr className="w-full h-0.5 bg-black"/>
 
           <div className="text-center">
             <span className="text-sm text-gray-600">Already have an account? </span>

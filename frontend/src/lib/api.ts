@@ -17,12 +17,17 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error('[API] Full Error:', error);
-    console.error('[API] Message:', error.message);
-    console.error('[API] Status:', error.response?.status);
-    console.error('[API] Data:', error.response?.data);
+    const status = error.response?.status;
 
-    if (error.response?.status === 419) {
+    // 401 is expected when user is not logged in.
+    if (status !== 401) {
+      console.error('[API] Full Error:', error);
+      console.error('[API] Message:', error.message);
+      console.error('[API] Status:', status);
+      console.error('[API] Data:', error.response?.data);
+    }
+
+    if (status === 419) {
       if (typeof window !== 'undefined') {
         console.warn('[API] CSRF mismatch, reloading...');
         window.location.reload();

@@ -3,34 +3,32 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Categories;
 
 class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Categories::select('id', 'name')->get();
+        $categories = Categories::select('id', 'name', 'slug')->get();
         return response()->json([
             'status' => 'success',
             'data' => $categories
         ], 200);
     }
 
-    public function show($id)
+    public function show($slug)
     {
-        if (!$id) {
-            return response()->json(['message' => 'Category ID is required'], 400);
-        }
-        if (!is_numeric($id)) {
-            return response()->json(['message' => 'Category ID must be numeric'], 400);
+        if(!$slug){
+            return response()->json(['message' => 'Category slug is required'], 400);
         }
 
-        if (!Categories::find($id)) {
-            return response()->json(['message' => 'Category not found'], 404);
-        }
-
-        $category = Categories::find($id);
-        return response()->json(['status' => 'success', 'data' => $category], 200);
+        $category = Categories::with([
+            'Products:id,name,slug,image_url,price,category_id',
+            'Products.ProductVariants:id,product_id,size,quantity'
+        ])->where('slug', $slug)->first();
+        return response()->json([
+            'status' => 'success', 
+            'data' => $category
+        ], 200);
     }
 }

@@ -1,7 +1,8 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import CardProduct from "@/components/ui/CardProduct";
-import NewDrop from "@/features/product/components/NewDrop";
+import NewDrop from "@/features/product/components/list/NewDrop";
+import CategoryShowcase from "@/features/category/components/CategoryShowcase";
 
 export default function Home() {
   return (
@@ -18,8 +19,14 @@ export default function Home() {
           HELLDESTRUCTION
         </h1>
       </div>
+      
       <NewDrop />
-      {/* <CardProduct /> */}
+
+      <h1 className="text-[clamp(2rem,8vw,5rem)] font-black uppercase leading-none tracking-tight text-black py-8">
+        Shop by category
+      </h1>
+
+      <CategoryShowcase />
     </div>
   );
 }

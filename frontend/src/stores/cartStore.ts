@@ -9,6 +9,7 @@ export interface CartItem {
   price: number;
   product_variant: {
     id: number;
+    size: string;
     product_id: number;
     quantity: number;
     products: {
@@ -40,6 +41,30 @@ interface CartState {
   removeFromCart: (id: number) => Promise<void>;
 }
 
+const getErrorMessage = (error: unknown, fallback: string) => {
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'response' in error
+  ) {
+    const axiosError = error as {
+      response?: {
+        data?: {
+          message?: string;
+        };
+      };
+    };
+
+    return axiosError.response?.data?.message || fallback;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return fallback;
+};
+
 export const useCartStore = create<CartState>((set, get) => ({
   cart: null,
   total: 0,
@@ -48,6 +73,7 @@ export const useCartStore = create<CartState>((set, get) => ({
 
   fetchCart: async () => {
     set({ isLoading: true, error: null });
+
     try {
       const response = await api.get('api/cart');
 
@@ -55,43 +81,66 @@ export const useCartStore = create<CartState>((set, get) => ({
         cart: response.data.cart,
         total: response.data.total,
         isLoading: false,
+        error: null,
       });
     } catch (error) {
+      const message = getErrorMessage(error, 'Failed to fetch cart');
+
       set({
-        error: error instanceof Error ? error.message : 'Failed to fetch cart',
+        error: message,
         isLoading: false,
       });
+
+      throw new Error(message);
     }
   },
 
   addToCart: async (productVariantId: number, quantity: number) => {
     set({ isLoading: true, error: null });
+
     try {
       await api.post('api/cart/add', {
         product_variant_id: productVariantId,
         quantity,
       });
+
       await get().fetchCart();
-    } catch (error) {
+
       set({
-        error: error instanceof Error ? error.message : 'Failed to add to cart',
+        error: null,
+      });
+    } catch (error) {
+      const message = getErrorMessage(error, 'Failed to add to cart');
+
+      set({
+        error: message,
         isLoading: false,
       });
-      throw error;
+
+      throw new Error(message);
     }
   },
 
   removeFromCart: async (id: number) => {
     set({ isLoading: true, error: null });
+
     try {
       await api.delete(`api/cart/remove/${id}`);
+
       await get().fetchCart();
-    } catch (error) {
+
       set({
-        error: error instanceof Error ? error.message : 'Failed to remove from cart',
+        error: null,
+      });
+    } catch (error) {
+      const message = getErrorMessage(error, 'Failed to remove from cart');
+
+      set({
+        error: message,
         isLoading: false,
       });
-      throw error;
+
+      throw new Error(message);
     }
   },
 }));

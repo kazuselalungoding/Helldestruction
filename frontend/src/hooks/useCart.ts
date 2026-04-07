@@ -1,6 +1,6 @@
-import { useState, useCallback } from 'react';
-import { api } from '@/lib/api';
+import { useCallback } from 'react';
 import { useAuth } from './useAuth';
+import { useCartStore } from '@/stores/cartStore';
 
 export interface CartItem {
   id: number;
@@ -36,11 +36,13 @@ export interface CartResponse {
 
 export function useCart() {
   const { isAuthenticated } = useAuth();
-
-  const [cart, setCart] = useState<Cart | null>(null);
-  const [total, setTotal] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const cart = useCartStore((state) => state.cart);
+  const total = useCartStore((state) => state.total);
+  const isLoading = useCartStore((state) => state.isLoading);
+  const error = useCartStore((state) => state.error);
+  const fetchCart = useCartStore((state) => state.fetchCart);
+  const addToCartStore = useCartStore((state) => state.addToCart);
+  const removeFromCartStore = useCartStore((state) => state.removeFromCart);
 
   // GET CART
   const getCart = useCallback(async () => {
@@ -49,80 +51,41 @@ export function useCart() {
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const res = await api.get<CartResponse>('api/cart');
-
-      setCart(res.data.cart);
-      setTotal(res.data.total);
-
-      console.log('[useCart] Cart loaded:', res.data);
-    } catch (err: any) {
-      const msg = err.response?.data?.message || err.message || 'Failed to fetch cart';
-      setError(msg);
-      console.error('[useCart] Get cart error:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [isAuthenticated]);
+    await fetchCart();
+  }, [isAuthenticated, fetchCart]);
 
   // ADD TO CART
   const addToCart = useCallback(
     async (productVariantId: number, quantity: number) => {
       if (!isAuthenticated) {
-        const msg = 'Please login first';
-        setError(msg);
-        throw new Error(msg);
+        throw new Error('Please login first');
       }
 
       try {
-        setError(null);
-
-        const res = await api.post<CartResponse>('api/cart/add', {
-          product_variant_id: productVariantId,
-          quantity,
-        });
-
-        setCart(res.data.cart);
-        setTotal(res.data.total);
-
-        console.log('[useCart] Added to cart:', res.data);
-
-        return res.data;
-      } catch (err: any) {
-        const msg = err.response?.data?.message || err.message || 'Failed to add to cart';
-        setError(msg);
-        console.error('[useCart] Add to cart error:', err);
-        throw err;
+        await addToCartStore(productVariantId, quantity);
+      } catch (error) {
+        console.error('[useCart] Add to cart error:', error);
+        throw error;
       }
     },
-    [isAuthenticated]
+    [isAuthenticated, addToCartStore]
   );
 
   // REMOVE ITEM
   const removeFromCart = useCallback(
     async (cartItemId: number) => {
       if (!isAuthenticated) {
-        const msg = 'Please login first';
-        setError(msg);
-        throw new Error(msg);
+        throw new Error('Please login first');
       }
 
       try {
-        setError(null);
-
-        await api.delete(`api/cart/remove/${cartItemId}`);
-        await getCart();
-      } catch (err: any) {
-        const msg = err.response?.data?.message || err.message || 'Failed to remove item';
-        setError(msg);
-        console.error('[useCart] Remove cart item error:', err);
-        throw err;
+        await removeFromCartStore(cartItemId);
+      } catch (error) {
+        console.error('[useCart] Remove cart item error:', error);
+        throw error;
       }
     },
-    [getCart, isAuthenticated]
+    [isAuthenticated, removeFromCartStore]
   );
 
   return {

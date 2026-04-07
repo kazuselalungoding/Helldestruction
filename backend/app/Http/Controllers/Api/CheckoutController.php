@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Carts;
 use App\Models\Orders;
 use App\Models\OrderItems;
+use App\Models\ProductVariants;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -34,13 +35,27 @@ class CheckoutController extends Controller
             ], 400);
         }
 
-        $total = $cart->cartItems->sum(function ($item) {
-            return $item->quantity * (float) $item->price;
-        });
+        $total = $cart->cartItems->reduce(function ($carry, $item) {
+            return $carry + ($item->quantity * (float) $item->price);
+        }, 0);
 
         DB::beginTransaction();
 
         try {
+            foreach ($cart->cartItems as $item) {
+                $variant = ProductVariants::query()
+                    ->lockForUpdate()
+                    ->find($item->product_variant_id);
+
+                if (!$variant || $variant->quantity < $item->quantity) {
+                    DB::rollBack();
+
+                    return response()->json([
+                        'message' => 'Some items are out of stock or stock is insufficient'
+                    ], 400);
+                }
+            }
+
             $order = Orders::create([
                 'user_id' => $user->id,
                 'address_id' => $address->id,

@@ -39,7 +39,7 @@ export default function Footer() {
   ];
   return (
     <footer className="w-full h-full flex flex-col items-center justify-center gap-8">
-      <div className="w-full h-96 bg-primary-800 rounded-xl flex flex-col items-center justify-center gap-8">
+      <div className="hidden w-full h-96 bg-primary-800 rounded-xl sm:flex flex-col items-center justify-center gap-8">
         <div className="text-center font-bold font-bagos lg:text-6xl md:text-6xl sm:text-6xl text-4xl">
           <h1>MAKE UR SWAGG</h1>
           <h1>WITH US!!!</h1>

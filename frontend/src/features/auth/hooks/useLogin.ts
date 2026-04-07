@@ -28,12 +28,14 @@ export default function useLogin() {
         }
       } else {
         console.log('[useLogin] Login failed');
-        setError('Login failed. Please check your credentials.');
+        const storeError = useAuthStore.getState().error;
+        setError(storeError || 'Login failed. Please check your credentials.');
         setIsLoading(false);
       }
     } catch (err: any) {
       console.error('[useLogin] Error:', err);
-      setError(err?.response?.data?.message || 'An error occurred during login');
+      const storeError = useAuthStore.getState().error;
+      setError(err?.response?.data?.message || storeError || 'An error occurred during login');
       setIsLoading(false);
     }
   };

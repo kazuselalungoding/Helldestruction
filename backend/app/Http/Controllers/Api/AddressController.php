@@ -8,9 +8,7 @@ use Illuminate\Http\Request;
 
 class AddressController extends Controller
 {
-    /**
-     * Get all addresses for authenticated user
-     */
+
     public function index(Request $request)
     {
         $user = $request->user();
@@ -25,9 +23,7 @@ class AddressController extends Controller
         ], 200);
     }
 
-    /**
-     * Store a new address
-     */
+
     public function store(Request $request)
     {
         $user = $request->user();
@@ -60,9 +56,7 @@ class AddressController extends Controller
         ], 201);
     }
 
-    /**
-     * Show single address (optional but useful)
-     */
+
     public function show(Request $request, $id)
     {
         $user = $request->user();
@@ -76,9 +70,6 @@ class AddressController extends Controller
         ], 200);
     }
 
-    /**
-     * Update an existing address
-     */
     public function update(Request $request, $id)
     {
         $user = $request->user();
@@ -105,9 +96,6 @@ class AddressController extends Controller
         ], 200);
     }
 
-    /**
-     * Delete an address
-     */
     public function remove(Request $request, $id)
     {
         $user = $request->user();

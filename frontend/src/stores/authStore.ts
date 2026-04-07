@@ -1,18 +1,19 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { api } from '@/lib/api';
-import { getCsrfCookie } from '@/lib/csrfHelper';
-import type { User, AuthResponse } from '@/features/auth/types';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { api } from "@/lib/api";
+import { getCsrfCookie } from "@/lib/csrfHelper";
+import type { User, AuthResponse } from "@/features/auth/types";
 
 interface AuthState {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  hasCheckedAuth: boolean;
   error: string | null;
-  
+
   setUser: (user: User | null) => void;
   setError: (error: string | null) => void;
-  checkAuth: () => Promise<void>;
+  checkAuth: (force?: boolean) => Promise<void>;
   login: (email: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
@@ -24,170 +25,213 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       isLoading: false,
       isAuthenticated: false,
+      hasCheckedAuth: false,
       error: null,
 
       setUser: (user) => {
-        console.log('[authStore] setUser:', user);
-        set({ 
-          user, 
+        console.log("[authStore] setUser:", user);
+        set({
+          user,
           isAuthenticated: !!user,
+          hasCheckedAuth: true,
           isLoading: false,
-          error: null
+          error: null,
         });
       },
 
       setError: (error) => {
-        console.log('[authStore] setError:', error);
+        console.log("[authStore] setError:", error);
         set({ error });
       },
 
-      checkAuth: async () => {
-        console.log('[authStore] checkAuth started');
-        
-        // Don't check if already authenticated and have user data
+      checkAuth: async (force = false) => {
+        console.log("[authStore] checkAuth started");
+
         const currentState = get();
-        if (currentState.isAuthenticated && currentState.user) {
-          console.log('[authStore] Already authenticated, skipping check');
+        if (!force && (currentState.isLoading || currentState.hasCheckedAuth)) {
+          console.log(
+            "[authStore] Skipping checkAuth (already checked or loading)",
+          );
           return;
         }
-        
+
         try {
           set({ isLoading: true, error: null });
-          const response = await api.get<AuthResponse>('/api/user');
-          
-          console.log('[authStore] checkAuth response:', response.data);
-          
+          const response = await api.get<AuthResponse>("/api/user");
+
+          console.log("[authStore] checkAuth response:", response.data);
+
           if (response.data.status && response.data.user) {
-            set({ 
-              user: response.data.user, 
+            set({
+              user: response.data.user,
               isAuthenticated: true,
+              hasCheckedAuth: true,
               isLoading: false,
-              error: null
+              error: null,
             });
           } else {
-            set({ 
-              user: null, 
+            set({
+              user: null,
               isAuthenticated: false,
-              isLoading: false
+              hasCheckedAuth: true,
+              error: null,
+              isLoading: false,
             });
           }
         } catch (error: any) {
-          console.error('[authStore] checkAuth error:', error);
-          set({ 
-            user: null, 
+          const status = error?.response?.status;
+
+          if (status === 401) {
+            set({
+              user: null,
+              isAuthenticated: false,
+              hasCheckedAuth: true,
+              isLoading: false,
+              error: null,
+            });
+            return;
+          }
+
+          console.error("[authStore] checkAuth error:", error);
+          set({
+            user: null,
             isAuthenticated: false,
+            hasCheckedAuth: true,
             isLoading: false,
-            error: error.response?.data?.message || 'Failed to verify authentication'
+            error:
+              error.response?.data?.message ||
+              "Failed to verify authentication",
           });
         }
       },
 
       login: async (email: string, password: string) => {
-        console.log('[authStore] login started');
+        console.log("[authStore] login started");
         try {
           set({ error: null });
-          
-          console.log('[authStore] Getting CSRF token...');
+
+          console.log("[authStore] Getting CSRF token...");
           await getCsrfCookie();
-          
-          console.log('[authStore] Sending login request...');
-          const response = await api.post<AuthResponse>('/api/login', { 
-            email, 
-            password 
+
+          console.log("[authStore] Sending login request...");
+          const response = await api.post<AuthResponse>("/api/login", {
+            email,
+            password,
           });
-          
-          console.log('[authStore] Login response:', response.data);
-          
+
+          console.log("[authStore] Login response:", response.data);
+
           if (response.data.status && response.data.user) {
-            set({ 
-              user: response.data.user, 
+            set({
+              user: response.data.user,
               isAuthenticated: true,
-              error: null
+              hasCheckedAuth: true,
+              error: null,
             });
             return true;
           }
-          
-          set({ 
-            error: response.data.message 
+
+          set({
+            error: response.data.message,
           });
           return false;
         } catch (error: any) {
-          console.error('[authStore] login error:', error);
-          const errorMessage = error.response?.data?.message || 'Login failed';
-          set({ 
+          console.error("[authStore] login error:", error);
+          const errorMessage = error.response?.data?.message || "Login failed";
+          set({
             user: null,
             isAuthenticated: false,
-            error: errorMessage
+            hasCheckedAuth: true,
+            error: errorMessage,
           });
           return false;
         }
       },
 
       register: async (name: string, email: string, password: string) => {
-        console.log('[authStore] register started');
+        console.log("[authStore] register started");
         try {
           set({ error: null });
-          
+
           await getCsrfCookie();
-          
-          const response = await api.post<AuthResponse>('/api/register', { 
+
+          const response = await api.post<AuthResponse>("/api/register", {
             name,
-            email, 
-            password 
+            email,
+            password,
           });
-          
-          console.log('[authStore] register response:', response.data);
-          
+
+          console.log("[authStore] register response:", response.data);
+
           if (response.data.status && response.data.user) {
-            set({ 
-              user: response.data.user, 
+            set({
+              user: response.data.user,
               isAuthenticated: true,
-              error: null
+              hasCheckedAuth: true,
+              error: null,
             });
             return true;
           }
-          
-          set({ 
-            error: response.data.message 
+
+          set({
+            error: response.data.message || "Registration failed",
           });
           return false;
         } catch (error: any) {
-          console.error('[authStore] register error:', error);
-          const errorMessage = error.response?.data?.message || 'Registration failed';
-          set({ 
+          console.error("[authStore] register error:", error);
+
+          const backendErrors = error?.response?.data?.errors;
+          const backendMessage = error?.response?.data?.message;
+
+          let errorMessage = "Registration failed";
+
+          if (backendErrors?.email?.[0]) {
+            errorMessage = backendErrors.email[0];
+          } else if (backendErrors?.password?.[0]) {
+            errorMessage = backendErrors.password[0];
+          } else if (backendErrors?.name?.[0]) {
+            errorMessage = backendErrors.name[0];
+          } else if (backendMessage) {
+            errorMessage = backendMessage;
+          }
+
+          set({
             user: null,
             isAuthenticated: false,
-            error: errorMessage
+            hasCheckedAuth: true,
+            error: errorMessage,
           });
+
           return false;
         }
       },
 
       logout: async () => {
-        console.log('[authStore] logout started');
+        console.log("[authStore] logout started");
         try {
-          await api.post('/api/logout');
+          await api.post("/api/logout");
         } catch (error) {
-          console.error('[authStore] Logout error:', error);
+          console.error("[authStore] Logout error:", error);
         } finally {
-          set({ 
-            user: null, 
+          set({
+            user: null,
             isAuthenticated: false,
-            error: null
+            hasCheckedAuth: true,
+            error: null,
           });
-          
-          if (typeof window !== 'undefined') {
-            localStorage.removeItem('auth-storage');
+
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("auth-storage");
           }
         }
       },
     }),
     {
-      name: 'auth-storage',
-      partialize: (state) => ({ 
+      name: "auth-storage",
+      partialize: (state) => ({
         user: state.user,
-        isAuthenticated: state.isAuthenticated 
+        isAuthenticated: state.isAuthenticated,
       }),
-    }
-  )
+    },
+  ),
 );

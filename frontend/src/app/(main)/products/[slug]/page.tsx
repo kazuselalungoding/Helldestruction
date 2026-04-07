@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useProductDetail } from "@/features/product/hooks/useProductDetail";
-import ProductDetail from "@/features/product/components/ProductDetail";
+import ProductDetail from "@/features/product/components/detail/ProductDetail";
 
 export default function ProductDetailPage() {
   const params = useParams();

@@ -1,28 +1,47 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/stores/authStore';
-import { useCartStore } from '@/stores/cartStore';
-import { useAddressStore, type Address } from '@/stores/addressStore';
-import Button from '@/components/ui/Button';
-import AddressForm from '@/components/AddressForm';
-import AddressList from '@/components/AddressList';
-import CartReview from '@/components/CartReview';
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/authStore";
+import { useCartStore } from "@/stores/cartStore";
+import { useAddressStore } from "@/stores/addressStore";
+import { usePayment } from "@/features/dashboard/hooks/usePayment";
+import { useOrder } from "@/features/dashboard/hooks/useOrder";
 
-type Tab = 'addresses' | 'cart';
+import DashboardHeader from "@/features/dashboard/components/dashboard/DashboardHeader";
+import DashboardPaymentSection from "@/features/dashboard/components/Payment/DashboardPaymentSection";
+import DashboardOrderSection from "@/features/dashboard/components/Order/DashboardOrderSection";
+import DashboardSummary from "@/features/dashboard/components/shared/DashboardSummary";
+import DashboardTabs from "@/features/dashboard/components/shared/DashboardTabs";
+import DashboardAddressesSection from "@/features/dashboard/components/Address/DashboardAddressesSection";
+import DashboardCartSection from "@/features/dashboard/components/Cart/DashboardCartSection";
+
+import useDashboardPage from "@/features/dashboard/hooks/useDashboardPage";
+import type { DashboardTab } from "@/features/dashboard/types/dashboard.types";
 
 export default function DashboardPage() {
   const router = useRouter();
   const { user, isAuthenticated, checkAuth, logout } = useAuthStore();
   const { addresses, fetchAddresses } = useAddressStore();
-  const { fetchCart } = useCartStore();
+  const { cart, fetchCart } = useCartStore();
+
+  const { payments, fetchPayments } = usePayment();
+  const { orders, fetchOrders } = useOrder();
 
   const [isChecking, setIsChecking] = useState(true);
-  const [activeTab, setActiveTab] = useState<Tab>('addresses');
-  const [editingAddress, setEditingAddress] = useState<Address | undefined>();
-  const [showForm, setShowForm] = useState(false);
-  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+
+  const {
+    activeTab,
+    editingAddress,
+    showForm,
+    selectedAddressId,
+    setSelectedAddressId,
+    handleEditAddress,
+    handleAddressFormSuccess,
+    handleChangeTab,
+    openForm,
+    closeForm,
+  } = useDashboardPage({ addresses });
 
   useEffect(() => {
     const performAuthCheck = async () => {
@@ -36,174 +55,104 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!isChecking && !isAuthenticated) {
-      router.push('/login');
+      router.push("/login");
     }
   }, [isAuthenticated, isChecking, router]);
 
-  useEffect(() => {
-    if (isAuthenticated && !isChecking) {
-      fetchAddresses();
-      fetchCart();
-    }
-  }, [isAuthenticated, isChecking, fetchAddresses, fetchCart]);
+  const tabFetchMap = useMemo<Record<DashboardTab, () => void>>(
+    () => ({
+      addresses: fetchAddresses,
+      cart: fetchCart,
+      payment: fetchPayments,
+      order: fetchOrders,
+    }),
+    [fetchAddresses, fetchCart, fetchPayments, fetchOrders]
+  );
 
   useEffect(() => {
-    if (addresses.length > 0 && !selectedAddressId) {
-      setSelectedAddressId(addresses[0].id);
-    }
-  }, [addresses, selectedAddressId]);
+    if (!isAuthenticated || isChecking) return;
+
+    tabFetchMap[activeTab]?.();
+  }, [activeTab, isAuthenticated, isChecking, tabFetchMap]);
+
+  useEffect(() => {
+    const handleFocus = () => {
+      if (!isAuthenticated || isChecking) return;
+
+      tabFetchMap[activeTab]?.();
+    };
+
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [activeTab, isAuthenticated, isChecking, tabFetchMap]);
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/");
+  };
 
   if (isChecking) {
     return (
-      <div className="min-h-screen w-full bg-black flex items-center justify-center">
-        <div className="text-white text-xl">Verifying authentication...</div>
+      <div className="flex min-h-screen w-full items-center justify-center bg-white">
+        <div className="text-base font-medium uppercase tracking-[0.08em] text-primary-700">
+          Verifying session...
+        </div>
       </div>
     );
   }
 
   if (!isAuthenticated || !user) {
     return (
-      <div className="min-h-screen w-full bg-black flex items-center justify-center">
-        <div className="text-white text-xl">Redirecting to login...</div>
+      <div className="flex min-h-screen w-full items-center justify-center bg-white">
+        <div className="text-base font-medium uppercase tracking-[0.08em] text-primary-700">
+          Redirecting...
+        </div>
       </div>
     );
   }
 
-  const handleLogout = async () => {
-    await logout();
-    router.push('/');
-  };
-
-  const handleEditAddress = (address: Address) => {
-    setEditingAddress(address);
-    setShowForm(true);
-    setActiveTab('addresses');
-  };
-
-  const handleAddressFormSuccess = () => {
-    setEditingAddress(undefined);
-    setShowForm(false);
-  };
-
   return (
-    <div className="min-h-screen w-full bg-black">
-      <div className="w-full p-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-white font-bagos">
-            DASHBOARD
-          </h1>
-          <Button
-            label="LOGOUT"
-            type="button"
-            size="medium"
-            onClick={handleLogout}
+    <div className="min-h-screen w-full bg-white">
+      <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+        <DashboardHeader onLogout={handleLogout} />
+
+        <DashboardSummary
+          userName={user?.name || "User"}
+          userEmail={user?.email || "-"}
+          addressCount={addresses.length}
+          cartCount={cart?.cart_items?.length || 0}
+          paymentCount={payments.length}
+          selectedAddressId={selectedAddressId}
+        />
+
+        <DashboardTabs activeTab={activeTab} onChangeTab={handleChangeTab} />
+
+        {activeTab === "addresses" && (
+          <DashboardAddressesSection
+            showForm={showForm}
+            editingAddress={editingAddress}
+            selectedAddressId={selectedAddressId}
+            onSelectAddress={setSelectedAddressId}
+            onEditAddress={handleEditAddress}
+            onOpenForm={openForm}
+            onCloseForm={closeForm}
+            onFormSuccess={handleAddressFormSuccess}
           />
-        </div>
-
-        <div className="bg-zinc-900 p-6 rounded-lg shadow-lg mb-8 border border-zinc-800">
-          <h2 className="text-xl font-semibold text-white mb-4 font-bagos">
-            WELCOME, {user.name.toUpperCase()}!
-          </h2>
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <span className="text-primary-700 font-medium">EMAIL:</span>
-              <span className="text-gray-300">{user.email}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-4 mb-8 border-b border-zinc-800">
-          <button
-            onClick={() => {
-              setActiveTab('addresses');
-              setEditingAddress(undefined);
-              setShowForm(false);
-            }}
-            className={`px-6 py-3 font-semibold transition ${
-              activeTab === 'addresses'
-                ? 'text-primary-700 border-b-2 border-primary-700'
-                : 'text-gray-400 hover:text-white'
-            }`}
-          >
-            My Addresses ({addresses.length})
-          </button>
-
-          <button
-            onClick={() => setActiveTab('cart')}
-            className={`px-6 py-3 font-semibold transition ${
-              activeTab === 'cart'
-                ? 'text-primary-700 border-b-2 border-primary-700'
-                : 'text-gray-400 hover:text-white'
-            }`}
-          >
-            Cart & Checkout
-          </button>
-        </div>
-
-        {activeTab === 'addresses' && (
-          <div className="space-y-6">
-            {!showForm ? (
-              <>
-                <div className="flex justify-between items-center">
-                  <h3 className="text-xl font-semibold text-white">
-                    Shipping Addresses
-                  </h3>
-                  <Button
-                    label="ADD NEW ADDRESS"
-                    onClick={() => setShowForm(true)}
-                    size="medium"
-                  />
-                </div>
-
-                <div className="bg-zinc-900 p-6 rounded-lg shadow-lg border border-zinc-800">
-                  <AddressList
-                    onEditAddress={handleEditAddress}
-                    selectedAddressId={selectedAddressId}
-                    onSelectAddress={setSelectedAddressId}
-                  />
-                </div>
-              </>
-            ) : (
-              <div className="bg-zinc-900 p-6 rounded-lg shadow-lg border border-zinc-800">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-semibold text-white">
-                    {editingAddress ? 'Edit Address' : 'Add New Address'}
-                  </h3>
-                  <button
-                    onClick={() => {
-                      setShowForm(false);
-                      setEditingAddress(undefined);
-                    }}
-                    className="text-gray-400 hover:text-white"
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                <AddressForm
-                  address={editingAddress}
-                  onSuccess={handleAddressFormSuccess}
-                />
-              </div>
-            )}
-          </div>
         )}
 
-        {activeTab === 'cart' && (
-          <div className="space-y-6">
-            <h3 className="text-xl font-semibold text-white">Review Your Cart</h3>
-
-            {selectedAddressId && (
-              <div className="text-sm text-primary-700">
-                Selected Address ID: {selectedAddressId}
-              </div>
-            )}
-
-            <div className="bg-zinc-900 p-6 rounded-lg shadow-lg border border-zinc-800">
-              <CartReview selectedAddressId={selectedAddressId} />
-            </div>
-          </div>
+        {activeTab === "cart" && (
+          <DashboardCartSection
+            selectedAddressId={selectedAddressId}
+            cartCount={cart?.cart_items?.length || 0}
+          />
         )}
+
+        {activeTab === "payment" && <DashboardPaymentSection />}
+
+        {activeTab === "order" && <DashboardOrderSection />}
       </div>
     </div>
   );
