@@ -11,10 +11,10 @@ class EditPayments extends EditRecord
     
     protected static string $resource = PaymentsResource::class;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            DeleteAction::make(),
-        ];
-    }
+    // protected function getHeaderActions(): array
+    // {
+    //     return [
+    //         DeleteAction::make(),
+    //     ];
+    // }
 }
