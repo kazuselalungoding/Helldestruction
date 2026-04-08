@@ -44,9 +44,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/address/{id}', [AddressController::class, 'remove']);
 
     Route::post('/checkout', [CheckoutController::class, 'checkout']);
-
-    Route::get('/payment',[PaymentController::class, 'index']);
-    Route::get('/payment/{id}', [PaymentController::class, 'show']);
     Route::post('/payment/{orderId}', [PaymentController::class, 'createInvoice']);
 
 

@@ -10,7 +10,6 @@ interface DashboardTabsProps {
 const tabs: { id: DashboardTab; label: string }[] = [
   { id: 'addresses', label: 'Addresses' },
   { id: 'cart', label: 'Cart & Checkout' },
-  { id: 'payment', label: 'Payment' },
   { id: 'order', label: 'Order' },
 ];
 

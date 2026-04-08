@@ -11,7 +11,7 @@ export default function SearchResults({ products }: SearchResultsProps) {
   const STORAGE_URL = process.env.NEXT_PUBLIC_STORAGE_URL;
 
   return (
-    <div className="grid w-full grid-cols-2 gap-3 px-0 py-0 sm:grid-cols-3 sm:gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4 lg:gap-6 xl:grid-cols-5 xl:gap-6">
+    <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4 lg:gap-6 xl:grid-cols-5 xl:gap-6">
       {products.map((product) => {
         const isSoldOut =
           product.product_variants?.every((variant) => variant.quantity === 0) ||

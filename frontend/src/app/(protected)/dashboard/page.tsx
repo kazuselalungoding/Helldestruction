@@ -5,11 +5,9 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
 import { useCartStore } from "@/stores/cartStore";
 import { useAddressStore } from "@/stores/addressStore";
-import { usePayment } from "@/features/dashboard/hooks/usePayment";
 import { useOrder } from "@/features/dashboard/hooks/useOrder";
 
 import DashboardHeader from "@/features/dashboard/components/dashboard/DashboardHeader";
-import DashboardPaymentSection from "@/features/dashboard/components/Payment/DashboardPaymentSection";
 import DashboardOrderSection from "@/features/dashboard/components/Order/DashboardOrderSection";
 import DashboardSummary from "@/features/dashboard/components/shared/DashboardSummary";
 import DashboardTabs from "@/features/dashboard/components/shared/DashboardTabs";
@@ -25,7 +23,6 @@ export default function DashboardPage() {
   const { addresses, fetchAddresses } = useAddressStore();
   const { cart, fetchCart } = useCartStore();
 
-  const { payments, fetchPayments } = usePayment();
   const { orders, fetchOrders } = useOrder();
 
   const [isChecking, setIsChecking] = useState(true);
@@ -63,10 +60,9 @@ export default function DashboardPage() {
     () => ({
       addresses: fetchAddresses,
       cart: fetchCart,
-      payment: fetchPayments,
       order: fetchOrders,
     }),
-    [fetchAddresses, fetchCart, fetchPayments, fetchOrders]
+    [fetchAddresses, fetchCart, fetchOrders]
   );
 
   useEffect(() => {
@@ -124,7 +120,6 @@ export default function DashboardPage() {
           userEmail={user?.email || "-"}
           addressCount={addresses.length}
           cartCount={cart?.cart_items?.length || 0}
-          paymentCount={payments.length}
           selectedAddressId={selectedAddressId}
         />
 
@@ -149,8 +144,6 @@ export default function DashboardPage() {
             cartCount={cart?.cart_items?.length || 0}
           />
         )}
-
-        {activeTab === "payment" && <DashboardPaymentSection />}
 
         {activeTab === "order" && <DashboardOrderSection />}
       </div>

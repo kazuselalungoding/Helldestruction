@@ -66,48 +66,4 @@ class PaymentController extends Controller
             ], 500);
         }
     }
-
-    public function index(Request $request)
-    {
-        $user = $request->user();
-
-        $payments = Payments::with([
-            'order:id,user_id,external_id,total_price'
-        ])
-            ->whereHas('order', function ($q) use ($user) {
-                $q->where('user_id', $user->id);
-            })
-            ->latest()
-            ->get();
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $payments
-        ]);
-    }
-
-    public function show(Request $request, $id)
-    {
-        $user = $request->user();
-
-        $payment = Payments::with([
-            'order:id,user_id,external_id,total_price'
-        ])
-            ->where('id', $id)
-            ->whereHas('order', function ($q) use ($user) {
-                $q->where('user_id', $user->id);
-            })
-            ->first();
-
-        if (!$payment) {
-            return response()->json([
-                'message' => 'Payment not found'
-            ], 404);
-        }
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $payment
-        ]);
-    }
 }

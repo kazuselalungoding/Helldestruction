@@ -13,7 +13,7 @@ export default function DashboardLayout({
     <div className="dashboard-layout">
       <Navbar color={false} fixed={true} />
       {children}
-      <FloatingCartButton />
+      {/* <FloatingCartButton /> */}
     </div>
   );
 }

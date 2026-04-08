@@ -1,6 +1,6 @@
 import type { Address } from '@/stores/addressStore';
 
-export type DashboardTab = 'addresses' | 'cart' | 'payment' | 'order';
+export type DashboardTab = 'addresses' | 'cart' | 'order';
 
 export interface UseDashboardPageReturn {
   activeTab: DashboardTab;

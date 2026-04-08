@@ -17,14 +17,14 @@ export default function CategoryProductsGrid({ products }: CategoryProductsGridP
   }
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid gap-4 place-items-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {products.map((product) => (
         <CardProduct
           key={product.id}
           size="medium"
           productName={product.name}
           price={Number(product.price)}
-          imageUrl={`${STORAGE_URL}/storage/${product.image_url}`}
+          imageUrl={`${STORAGE_URL}/${product.image_url}`}
           productSlug={product.slug}
           isSoldOut={isCategoryProductSoldOut(product)}
         />
