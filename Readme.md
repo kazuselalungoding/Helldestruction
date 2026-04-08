@@ -30,7 +30,7 @@
 - [Admin Panel](#admin-panel)
 - [License](#license)
 
-## 🎯 About
+## 🎯 About <a name = "about"></a>
 
 HELLDESTRUCTION is a full-stack e-commerce application with:
 - **Modern Frontend** - Next.js 16 with TypeScript and Tailwind CSS 4
@@ -39,7 +39,7 @@ HELLDESTRUCTION is a full-stack e-commerce application with:
 - **Payment Integration** - Xendit payment gateway integration for secure transactions
 - **Real-time Updates** - WebHook support for order status tracking
 
-## ✨ Features
+## ✨ Features <a name = "features"></a>
 
 ### Customer Features
 - 🛍️ Product browsing with search
@@ -59,7 +59,7 @@ HELLDESTRUCTION is a full-stack e-commerce application with:
 - 💰 Payment and settlement tracking
 - 📈 Sales reports and statistics
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack <a name = "tech-stack"></a>
 
 ### Frontend
 - **Framework**: Next.js 16.1.6
@@ -77,7 +77,7 @@ HELLDESTRUCTION is a full-stack e-commerce application with:
 - **Payment Gateway**: Xendit API
 - **File Storage**: Laravel Storage
 
-## 📋 Prerequisites
+## 📋 Prerequisites <a name = "prerequisites"></a>
 
 - Node.js 18+ (Frontend)
 - PHP 8.2+ (Backend)
@@ -85,9 +85,9 @@ HELLDESTRUCTION is a full-stack e-commerce application with:
 - Composer (PHP dependency manager)
 - Bun or npm (Node package manager)
 
-## 🚀 Installation
+## 🚀 Installation <a name = "installation"></a>
 
-### Backend Setup
+### Backend Setup 
 
 ```bash
 # Navigate to backend directory
@@ -142,7 +142,7 @@ bun run dev
 
 Access frontend at `http://localhost:3000` and backend API at `http://localhost:8000`
 
-## 📁 Project Structure
+## 📁 Project Structure <a name = "project-structure"></a>
 
 ```
 Helldestruction/
@@ -173,7 +173,7 @@ Helldestruction/
     └── ...
 ```
 
-## 🔌 API Documentation
+## 🔌 API Documentation <a name = "api-documentation"></a>
 
 ### Authentication Endpoints
 ```
@@ -214,7 +214,7 @@ GET    /api/payment/{id}       - Get payment status
 POST   /webhook/xendit         - Xendit webhook handler
 ```
 
-## 📊 Admin Panel
+## 📊 Admin Panel <a name = "admin-panel"></a>
 
 Access Filament admin panel at `/admin` (authenticated users only)
 
@@ -227,7 +227,7 @@ Features:
 - User management
 - Sales analytics
 
-## 📝 License
+## 📝 License <a name = "license"></a>
 
 This project is licensed under the MIT License - see the [LICENSE](/LICENSE) file for details.
 
