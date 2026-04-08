@@ -193,8 +193,7 @@ POST    /address            - Add New address user
 GET     /address/{id}       - Get user address by id
 PUT     /address/{id}       - Update User address by id
 DELETE  /address/{id}       - Delete user addres by id
-POST    /checkout           - Checkout product Cart 
-POST    /payment/{orderId}  - Create Payment Xendit
+
 ```
 
 ### Product Endpoints
@@ -214,8 +213,8 @@ GET    /api/orders/{external_id}        - Get order detail by external_id
 
 ### Payment Endpoints
 ```
-POST   /api/payment            - Initiate payment
-GET    /api/payment/{id}       - Get payment status
+POST   /checkout               - Checkout product Cart 
+POST   /payment/{orderId}      - Create Payment Xendit
 POST   /webhook/xendit         - Xendit webhook handler
 ```
 
@@ -443,7 +442,58 @@ setelah user memilih ingin melakukan pembayaran menggunakan apa dan berhasil mak
 **PROCESS**
 - disini sistem webhook akan berjalan sesuai dari return data dari xendit, jika ada perubahan maka sistem akan melakukan insert data pada column database
 
+## Admin
 
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/8flnp6.png" alt="products"></a>
+</p>
+
+acces admin panel cukup tambahkan  `/admin` untuk cara mendaftarkan akun admin pada pertama kali bisa dilihat pada documentation [Installation](#installation)
+
+
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/8p41qs.png" alt="products"></a>
+</p>
+
+pada halaman dashboard admin bisa melihat total pengguna, total pesanan yang dalam tahap processing serta cash flow dalam process juga
+
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/aq802u.png" alt="products"></a>
+</p>
+
+pada halaman category, collection , products admin bisa menambahkan category / product / collection yang akan di tambahkan
+
+
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/aq802u.png" alt="products"></a>
+</p>
+
+pada halaman category, collection , products admin bisa menambahkan category / product / collection yang akan di tambahkan cukup click new create lalu isi form yang telah ada seperti dibawah ini contohnya
+
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/e5mj8i.png" alt="products"></a>
+</p>
+
+---
+
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/k8666a.png" alt="products"></a>
+</p>
+
+pada halaman orders disini admin bisa melihat orderan dan mengantur status orderan serta admin bisa melakukan filter berdasarkan status
+
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/4iuz3n.png" alt="products"></a>
+</p>
+
+pada halaman users admin bisa menambahkan user
 
 
 
