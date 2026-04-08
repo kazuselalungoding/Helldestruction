@@ -1,3 +1,6 @@
+import type { Cart } from '@/stores/cartStore';
+import type { Address } from '@/stores/addressStore';
+
 export interface UseFloatingCartReturn {
   isOpen: boolean;
   isAddressPickerOpen: boolean;
@@ -5,11 +8,11 @@ export interface UseFloatingCartReturn {
   updatingItemId: number | null;
   itemCount: number;
 
-  cart: ReturnType<typeof import('@/stores/cartStore').useCartStore.getState>['cart'];
+  cart: Cart | null;
   total: number;
   isLoading: boolean;
 
-  addresses: import('@/stores/addressStore').Address[];
+  addresses: Address[];
   isAddressLoading: boolean;
 
   isCheckoutLoading: boolean;
