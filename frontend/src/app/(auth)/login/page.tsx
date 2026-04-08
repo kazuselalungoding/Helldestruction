@@ -1,7 +1,5 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-
 import Navbar from "@/components/layout/Navbar";
 import LoginForm from "@/features/auth/components/LoginForm";
 
