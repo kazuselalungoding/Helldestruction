@@ -8,14 +8,14 @@ export default function Home() {
   return (
     <div className="w-full h-full">
       <div className="w-full h-full flex flex-col items-center justify-center pt-4">
-        <div className="w-full h-128 ">
+        <div className="w-full h-[clamp(200px,40vw,800px)] relative">
           <img
             src="/assets/image/contoh.png"
             className="w-full h-full object-cover rounded-xl"
             alt=""
           />
         </div>
-        <h1 className="text-[clamp(2rem,9vw,9rem)] md:text-[clamp(2rem,10vw,9rem)] lg:text-[clamp(2rem,10vw,9rem)] font-bagos font-bold text-primary-800 text-center leading-none">
+        <h1 className="text-[clamp(2rem,9vw,9rem)] md:text-[clamp(2rem,10vw,9rem)] lg:text-[clamp(2rem,10vw,18rem)] font-bagos font-bold text-primary-800 text-center leading-none">
           HELLDESTRUCTION
         </h1>
       </div>

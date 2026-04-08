@@ -28,7 +28,9 @@
 - [Project Structure](#project-structure)
 - [API Documentation](#api-documentation)
 - [Admin Panel](#admin-panel)
+- [Technical Documentation](#technical-documentation)
 - [License](#license)
+
 
 ## 🎯 About <a name = "about"></a>
 
@@ -109,6 +111,9 @@ php artisan key:generate
 
 # Run migrations
 php artisan migrate
+
+#link storage
+php artisan storage:link
 
 # to create admin user or add admin user
 php artisan make:user-admin
@@ -219,13 +224,236 @@ POST   /webhook/xendit         - Xendit webhook handler
 Access Filament admin panel at `/admin` (authenticated users only)
 
 Features:
-- Dashboard with KPIs
 - Product management with variants
 - Order management with status tracking
 - Category management
 - Payment reconciliation
 - User management
-- Sales analytics
+
+## Technical Documentation <a name="technical-documentation"></a>
+
+### 1. ERD <a name="erd"></a>
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/kaciqy.png" alt="ERD"></a>
+</p>
+<p align="center">
+  <a href="https://www.drawdb.app/editor?shareId=26e8abf8b17b974f579a8caa3a727342" rel="noopener">Second Link ERD</a>
+</p>
+
+### 2. CHECKOUT FLOW && PAYMENT <a name="checkout-flow"></a>
+
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/ki6io9.png" alt="home"></a>
+</p>
+ 
+Pertama kali user masuk website mereka akan masuk pada halaman home website user bisa
+klik svg orang di kanan atas dekat humbergger menu atau casenya user langsung mencari baju
+
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/won6ri.png" alt="home"></a>
+</p>
+
+klik svg orang di kanan atas dekat humbergger
+
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/r9hy9t.png" alt="login"></a>
+</p>
+
+setelah di klik user akan masuk kebagian login jika belum meiliki akun maka bisa klik sign up
+
+jika user login maka akan hit api 
+- `POST /api/login`
+
+
+
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/9679qp.png" alt="register"></a>
+</p>
+
+disini user bisa mengisi data diri yang dimana membutuhkan Nama Lengkap, Email, Serta password
+
+user melakukan register maka hit api
+
+- `POST /api/register`
+
+**PROCESS**
+- validasi email jika email telah terdaftar
+- jika email belum terdaftar, maka akan berhasil mendaftar
+
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/y1shus.png" alt="dashboard"></a>
+</p>
+
+setelah register maka user akan secara otomatis di redirect ke halaman dasboard
+
+- `GET /api/dashboard`
+- `GET /api/user`
+- `GET /api/address`
+- `GET /api/orders`
+- `GET /api/cart`
+
+
+**PROCESS**
+- disini tugas  `GET /api/user` akan mengecek apakah valid sessionnya atau tidak
+- lalu sistem akan mengambil data dari `GET /api/dashboard` 
+
+
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/d76uvi.png" alt="dashboard"></a>
+</p>
+
+disini user bisa klik button add new address untuk menambahkan alamat pengiriman
+
+
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/ivdhnv.png" alt="dashboard"></a>
+</p>
+
+disini user bisa mengisi nama penerima dan alamat pengiriman seperti jalan kota negara dan kode pos serta nomor telephone
+
+- `POST /api/address`
+
+**PROCESS**
+- disini sistem akan menyimpan data yang telah user isi ke dalam database
+
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/rqac1g.png" alt="dashboard"></a>
+</p>
+
+maka setelah user berhasil menambahkan alamat, alamat akan muncul pada tab address yang dimana itu akan menjadi alamat default, akan tetapi jika user memiliki alamat lain maka user bisa menambahkan dan bisa memilih alamat tersebut
+
+- `GET /api/address`
+
+**PROCESS**
+- mengambil data ulang dikarenakan ada perubahan dari api - `GET /api/address`
+
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/k5fvgq.png" alt="products"></a>
+</p>
+
+selanjutnya user bisa membeli product dari website kami dengan cara berpindahalaman melalui search atau dengan melakukan klik navbar humbergger lalu memilih product maka akan muncul semua product, user juga tidak bisa mengklik product tersebut jika sudah memiliki tanda sold out
+
+- `GET /api/products`
+
+**PROCESS**
+- disini sistem akan mengambil data dari endpoint - `GET /api/products` 
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/5y5bff.png" alt="products"></a>
+</p>
+
+selanjutnya jika user sudah memiliki barang yang ingin mereka beli user bisa pilih size terlebih dahulu dan minimal permbelian yaitu 1
+
+- `GET /api/products{slug}`
+
+**PROCESS**
+- disini sistem akan mengambil data dari endpoint tersebut berdasarkan slug
+
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/7s9dr9.png" alt="products"></a>
+</p>
+
+user menambahkan product ke cart dan melakukan checkout
+
+- `POST /api/cart/add`
+- `GET /api/cart`
+
+**PROCESS**
+- disini sistem akan melakukan insert pada database pada column cart dan cart_items
+- disini sistem akan mengambil data dari endpoint tersebut 
+
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/jfskas.png" alt="products"></a>
+</p>
+
+setelah user melakukan checkout maka disini kita bisa memilih alamat addres terlebih dahulu jika ingin diganti
+
+- `GET /api/address`
+
+**PROCESS**
+- disini sistem akan mengambil data dari endpoint tersebut 
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/yigt2o.png" alt="products"></a>
+</p>
+
+setelah user mengklik button pay now maka disini kita akan di pindahkan pada halaman pembayaran dari xendit itu sendiri
+
+- `POST api/checkout`
+
+**PROCESS**
+- disini sistem akan mengambil data dari total price dari column cart dan akan melakukan pembuatan invoice berdasarkan total cart tadi
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/1soihl.png" alt="products"></a>
+</p>
+
+setelah user memilih ingin melakukan pembayaran menggunakan apa dan berhasil maka selanjutnya endpoint dari
+
+- `POST api/xendit/webhook`
+
+**PROCESS**
+- disini sistem webhook akan berjalan sesuai dari return data dari xendit, jika ada perubahan maka sistem akan melakukan insert data pada column database
+
+### CASE 2
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/w2wd1l.png" alt="dashboard"></a>
+</p>
+
+disini user juga bisa melakukan pemabayaran pada halaman dashboard pada tab chart & checkout, yang berbeda disini adalah jika user ingin menganti alamat bisa pada tab address sebelumnya yang kita tamabahkan
+
+- `GET api/cart`
+
+**PROCESS**
+- disini sistem akan mengambil data dari endpoint tersebut 
+
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/9w9rbl.png" alt="products"></a>
+</p>
+
+setelah user mengklik button proceed to checkout maka disini kita akan di pindahkan pada halaman pembayaran dari xendit itu sendiri
+
+- `POST api/checkout`
+
+**PROCESS**
+- disini sistem akan mengambil data dari total price dari column cart dan akan melakukan pembuatan invoice berdasarkan total cart tadi
+<p align="center">
+  <a href="" rel="noopener">
+ <img  src="https://files.catbox.moe/8et6md.png" alt="products"></a>
+</p>
+
+setelah user memilih ingin melakukan pembayaran menggunakan apa dan berhasil maka selanjutnya endpoint dari
+
+- `POST api/xendit/webhook`
+
+**PROCESS**
+- disini sistem webhook akan berjalan sesuai dari return data dari xendit, jika ada perubahan maka sistem akan melakukan insert data pada column database
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 📝 License <a name = "license"></a>
 

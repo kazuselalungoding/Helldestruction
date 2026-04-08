@@ -14,8 +14,9 @@ interface CardProductProps {
 
 const SizeMap: Record<size, string> = {
   small: "w-48 h-48",
-  medium: "w-full max-w-[288px]",
+  medium: "w-72 h-72",
   large: "w-128 h-128",
+  full: "w-full max-w-[288px]",
 };
 
 export default function CardProduct({

@@ -19,7 +19,7 @@ export default function Product({ products }: ProductProps) {
           <CardProduct
             key={product.id}
             productSlug={product.slug}
-            size="medium"
+            size="full"
             productName={product.name}
             price={Number(product.price)}
             imageUrl={`${STORAGE_URL}/${product.image_url}`}

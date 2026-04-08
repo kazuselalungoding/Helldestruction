@@ -21,7 +21,7 @@ export default function SearchResults({ products }: SearchResultsProps) {
           <CardProduct
             key={product.id}
             productSlug={product.slug}
-            size="medium"
+            size="full"
             productName={product.name}
             price={Number(product.price)}
             imageUrl={`${STORAGE_URL}/${product.image_url}`}

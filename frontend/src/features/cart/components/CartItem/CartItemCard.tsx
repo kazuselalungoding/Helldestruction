@@ -42,7 +42,7 @@ export default function CartItemCard({
           {product?.name || 'Product'}
         </p>
         <p className="text-right font-bagos">
-          ${Number(item.price).toLocaleString('en-ID')}
+          RP {Number(item.price).toLocaleString('id-ID')}
         </p>
       </div>
 

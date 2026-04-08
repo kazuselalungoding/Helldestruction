@@ -1,7 +1,8 @@
 import Navbar from "@/components/layout/Navbar";
 import "../../styles/main.css";
 import Footer from "@/components/layout/Footer";
-import FloatingCartButton from "@/components/FloatingCartButton";
+import FloatingCartContainer from '@/features/cart/components/FloatingCart/FloatingCartContainer';
+
 
 export default function MainLayout({
   children,
@@ -13,7 +14,7 @@ export default function MainLayout({
       <Navbar color={true} fixed={true} />
       {children}
       <Footer/>
-      <FloatingCartButton />
+      <FloatingCartContainer />
     </div>
   );
 }

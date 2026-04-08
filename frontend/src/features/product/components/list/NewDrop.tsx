@@ -17,7 +17,7 @@ export default function NewDrop() {
         New Drop
       </h1>
 
-      <div className="grid grid-cols-1 place-items-center gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 place-items-center gap-6 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4">
         {products.map((product: any) => {
           const isSoldOut = product.product_variants.every(
             (v: any) => v.quantity === 0
@@ -28,6 +28,7 @@ export default function NewDrop() {
               key={product.id}
               productSlug={product.slug}
               productName={product.name}
+              size="full"
               price={Number(product.price)}
               isSoldOut={isSoldOut}
               imageUrl={`${STORAGE_URL}/${product.image_url}`}
