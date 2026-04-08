@@ -13,11 +13,6 @@ export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const sessionCookie = getSessionCookie(request);
 
-  console.log('[Middleware] ==================');
-  console.log('[Middleware] Path:', pathname);
-  console.log('[Middleware] Has Session:', !!sessionCookie);
-  console.log('[Middleware] Session Value:', sessionCookie?.substring(0, 20) + '...');
-
   // 1. Public routes - always allow
 //   if (isPublicRoute(pathname)) {
 //     console.log('[Middleware] Public route, allowing access');
@@ -26,11 +21,10 @@ export default async function middleware(request: NextRequest) {
 
   // 2. Auth routes (login/register)
   if (isAuthRoute(pathname)) {
-    console.log('[Middleware] Auth route detected');
     
     // TEMPORARILY: Allow access to auth routes regardless of session
     // TODO: Re-enable after fixing session handling
-    console.log('[Middleware] Allowing access to auth route');
+
     return NextResponse.next();
     
     /* DISABLED FOR NOW
@@ -50,11 +44,6 @@ export default async function middleware(request: NextRequest) {
 
   // 3. Protected routes - TEMPORARILY DISABLED
   if (isProtectedRoute(pathname)) {
-    console.log('[Middleware] Protected route detected');
-    
-    // TEMPORARILY: Allow all access to protected routes
-    // This lets us test if login works without middleware blocking
-    console.log('[Middleware] TEMPORARY: Allowing access without verification');
     return NextResponse.next();
     
     /* DISABLED FOR NOW
@@ -75,7 +64,6 @@ export default async function middleware(request: NextRequest) {
     */
   }
 
-  console.log('[Middleware] Default: allowing access');
   return NextResponse.next();
 }
 
