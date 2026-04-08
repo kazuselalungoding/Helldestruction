@@ -121,6 +121,7 @@ export default function DashboardPage() {
           addressCount={addresses.length}
           cartCount={cart?.cart_items?.length || 0}
           selectedAddressId={selectedAddressId}
+          orderCount={orders.length}
         />
 
         <DashboardTabs activeTab={activeTab} onChangeTab={handleChangeTab} />

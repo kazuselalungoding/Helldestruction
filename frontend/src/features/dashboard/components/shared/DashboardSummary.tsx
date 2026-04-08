@@ -5,7 +5,7 @@ interface DashboardSummaryProps {
   userEmail: string;
   addressCount: number;
   cartCount: number;
-  paymentCount: number;
+  orderCount: number;
   selectedAddressId: number | null;
 }
 
@@ -14,7 +14,7 @@ export default function DashboardSummary({
   userEmail,
   addressCount,
   cartCount,
-  paymentCount,
+  orderCount,
   selectedAddressId,
 }: DashboardSummaryProps) {
   return (
@@ -95,12 +95,12 @@ export default function DashboardSummary({
 
       <div className="rounded-[32px] bg-neutral-50/70 p-6">
         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-neutral-500">
-          Payment
+          Orders
         </p>
 
         <div className="mt-5 flex items-end justify-between">
           <h3 className="text-4xl font-bold tracking-tight text-primary-900">
-            {paymentCount}
+            {orderCount}
           </h3>
 
           <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-700">
@@ -109,7 +109,7 @@ export default function DashboardSummary({
         </div>
 
         <p className="mt-4 text-sm leading-7 text-primary-500">
-          Keep track of your completed and pending transactions.
+          Keep track of your completed and pending orders.
         </p>
       </div>
     </section>
