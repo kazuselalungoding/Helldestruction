@@ -33,7 +33,7 @@ export interface UseFloatingCartReturn {
   handleSubmitCheckout: () => Promise<void>;
 }
 
-type FloatingCartDrawerProps = {
+export type FloatingCartDrawerProps = {
   isOpen: boolean;
   isLoading: boolean;
   isCheckoutLoading: boolean;
