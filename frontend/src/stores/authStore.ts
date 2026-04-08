@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { persist, createJSONStorage, type StateStorage } from "zustand/middleware";
 import { api } from "@/lib/api";
 import { getCsrfCookie } from "@/lib/csrfHelper";
 import type { User, AuthResponse } from "@/features/auth/types";
@@ -18,6 +18,12 @@ interface AuthState {
   register: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
 }
+
+const noopStorage: StateStorage = {
+  getItem: () => null,
+  setItem: () => {},
+  removeItem: () => {},
+};
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -229,8 +235,9 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "auth-storage",
+
       storage: createJSONStorage(() =>
-        typeof window !== "undefined" ? localStorage : undefined
+        typeof window !== "undefined" ? localStorage : noopStorage
       ),
 
       partialize: (state) => ({
