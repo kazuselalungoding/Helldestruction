@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 
-type size = "small" | "medium" | "large";
+type size = "small" | "medium" | "large" | "full";
 
 interface CardProductProps {
   size?: size;
