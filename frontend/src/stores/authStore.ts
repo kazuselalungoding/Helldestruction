@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist, createJSONStorage, type StateStorage } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 import { api } from "@/lib/api";
 import { getCsrfCookie } from "@/lib/csrfHelper";
 import type { User, AuthResponse } from "@/features/auth/types";
@@ -18,12 +18,6 @@ interface AuthState {
   register: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
 }
-
-const noopStorage: StateStorage = {
-  getItem: () => null,
-  setItem: () => {},
-  removeItem: () => {},
-};
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -55,14 +49,17 @@ export const useAuthStore = create<AuthState>()(
 
         const currentState = get();
         if (!force && (currentState.isLoading || currentState.hasCheckedAuth)) {
-          console.log("[authStore] Skip checkAuth");
+          console.log(
+            "[authStore] Skipping checkAuth (already checked or loading)",
+          );
           return;
         }
 
         try {
           set({ isLoading: true, error: null });
+          const response = await api.get<AuthResponse>("/api/user");
 
-          const response = await api.get<AuthResponse>("api/user");
+          console.log("[authStore] checkAuth response:", response.data);
 
           if (response.data.status && response.data.user) {
             set({
@@ -77,8 +74,8 @@ export const useAuthStore = create<AuthState>()(
               user: null,
               isAuthenticated: false,
               hasCheckedAuth: true,
-              isLoading: false,
               error: null,
+              isLoading: false,
             });
           }
         } catch (error: any) {
@@ -96,7 +93,6 @@ export const useAuthStore = create<AuthState>()(
           }
 
           console.error("[authStore] checkAuth error:", error);
-
           set({
             user: null,
             isAuthenticated: false,
@@ -111,16 +107,19 @@ export const useAuthStore = create<AuthState>()(
 
       login: async (email: string, password: string) => {
         console.log("[authStore] login started");
-
         try {
           set({ error: null });
 
+          console.log("[authStore] Getting CSRF token...");
           await getCsrfCookie();
 
-          const response = await api.post<AuthResponse>("api/login", {
+          console.log("[authStore] Sending login request...");
+          const response = await api.post<AuthResponse>("/api/login", {
             email,
             password,
           });
+
+          console.log("[authStore] Login response:", response.data);
 
           if (response.data.status && response.data.user) {
             set({
@@ -135,38 +134,34 @@ export const useAuthStore = create<AuthState>()(
           set({
             error: response.data.message,
           });
-
           return false;
         } catch (error: any) {
           console.error("[authStore] login error:", error);
-
-          const errorMessage =
-            error.response?.data?.message || "Login failed";
-
+          const errorMessage = error.response?.data?.message || "Login failed";
           set({
             user: null,
             isAuthenticated: false,
             hasCheckedAuth: true,
             error: errorMessage,
           });
-
           return false;
         }
       },
 
       register: async (name: string, email: string, password: string) => {
         console.log("[authStore] register started");
-
         try {
           set({ error: null });
 
           await getCsrfCookie();
 
-          const response = await api.post<AuthResponse>("api/register", {
+          const response = await api.post<AuthResponse>("/api/register", {
             name,
             email,
             password,
           });
+
+          console.log("[authStore] register response:", response.data);
 
           if (response.data.status && response.data.user) {
             set({
@@ -181,7 +176,6 @@ export const useAuthStore = create<AuthState>()(
           set({
             error: response.data.message || "Registration failed",
           });
-
           return false;
         } catch (error: any) {
           console.error("[authStore] register error:", error);
@@ -214,11 +208,10 @@ export const useAuthStore = create<AuthState>()(
 
       logout: async () => {
         console.log("[authStore] logout started");
-
         try {
-          await api.post("api/logout");
+          await api.post("/api/logout");
         } catch (error) {
-          console.error("[authStore] logout error:", error);
+          console.error("[authStore] Logout error:", error);
         } finally {
           set({
             user: null,
@@ -235,15 +228,10 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "auth-storage",
-
-      storage: createJSONStorage(() =>
-        typeof window !== "undefined" ? localStorage : noopStorage
-      ),
-
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
-  )
+    },
+  ),
 );
