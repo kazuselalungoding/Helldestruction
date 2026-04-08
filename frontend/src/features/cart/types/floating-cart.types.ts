@@ -59,6 +59,6 @@ export type FloatingCartDrawerProps = {
   ) => void;
 };
 
-export type floatingCartEmptyStateProps = {
+export type FloatingCartEmptyStateProps = {
   onStartShopping: () => void;
 };

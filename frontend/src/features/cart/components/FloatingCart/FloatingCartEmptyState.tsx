@@ -1,4 +1,4 @@
-import type {floatingCartEmptyStateProps} from '@/features/cart/types/floating-cart.types';
+import type {FloatingCartEmptyStateProps} from '@/features/cart/types/floating-cart.types';
 
 export default function FloatingCartEmptyState({
   onStartShopping,
