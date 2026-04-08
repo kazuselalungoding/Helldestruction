@@ -10,10 +10,15 @@ class EditOrders extends EditRecord
 {
     protected static string $resource = OrdersResource::class;
 
-    protected function getHeaderActions(): array
+    // protected function getHeaderActions(): array
+    // {
+    //     return [
+    //         DeleteAction::make(),
+    //     ];
+    // }
+
+    protected function getRedirectUrl(): string
     {
-        return [
-            DeleteAction::make(),
-        ];
+        return $this->getResource()::getUrl('index');
     }
 }

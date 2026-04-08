@@ -10,10 +10,10 @@ class ListOrders extends ListRecords
 {
     protected static string $resource = OrdersResource::class;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            CreateAction::make(),
-        ];
-    }
+    // protected function getHeaderActions(): array
+    // {
+    //     return [
+    //         CreateAction::make(),
+    //     ];
+    // }
 }
