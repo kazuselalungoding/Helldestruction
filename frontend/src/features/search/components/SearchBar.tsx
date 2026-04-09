@@ -19,6 +19,7 @@ export default function SearchBar({
   const [keyword, setKeyword] = useState(initialValue);
 
   useEffect(() => {
+    if (!searchParams) return;
     const currentQuery = searchParams.get("q") || "";
     setKeyword(currentQuery);
   }, [searchParams]);

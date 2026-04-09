@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { searchProducts } from "../services/services";
 import type { SearchProduct } from "../types/search.types";
 
@@ -9,9 +9,12 @@ export default function useSearchProducts(query: string) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
+    if (typeof window === "undefined") return;
+
     if (!query.trim()) {
       setProducts([]);
+      setError(null);
       return;
     }
 
@@ -20,17 +23,19 @@ export default function useSearchProducts(query: string) {
       setError(null);
 
       const res = await searchProducts(query);
-      setProducts(res.data || []);
+      setProducts(res?.data || []);
     } catch (err: any) {
+      console.error("[useSearchProducts] Error:", err);
+      setProducts([]);
       setError(err?.response?.data?.message || "Failed to search products");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [query]);
 
   useEffect(() => {
     fetchProducts();
-  }, [query]);
+  }, [fetchProducts]);
 
   return {
     products,
