@@ -7,6 +7,8 @@ import SearchResults from "@/features/search/components/SearchResults";
 import SearchEmptyState from "@/features/search/components/SearchEmptyState";
 import useSearchProducts from "@/features/search/hooks/useSearchProducts";
 
+export const dynamic = "force-dynamic";
+
 export default function SearchPage() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
