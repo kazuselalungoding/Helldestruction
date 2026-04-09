@@ -14,7 +14,7 @@ export default function LoginPage() {
             alt="Fashion editorial"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/35 via-black/5 to-transparent" />
           <div className="absolute bottom-8 left-8 max-w-md text-white">
             <p className="mb-3 text-xs uppercase tracking-[0.35em]">Helldestruction</p>
             <h2 className="font-bagos text-5xl leading-[0.9]">

@@ -26,7 +26,14 @@ class ProductController extends Controller
         }
 
         if($request->search) {
-            $products->where('name', 'like', '%' . $request->search . '%');
+            $products->where('name', 'like', '%' . $request->search . '%')
+            ->orWhere('description', 'like', '%' . $request->search . '%')
+            ->orWhereHas('Collection', function($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->search . '%');
+            })
+            ->orWhereHas('Categories', function($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->search . '%');
+            });
         }
         
         return response()->json([
