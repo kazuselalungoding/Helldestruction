@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import SearchBar from "@/features/search/components/SearchBar";
 
 interface NavbarProps {
@@ -51,7 +51,9 @@ export default function Navbar({
             {/* Search */}
             <div className="flex flex-1 justify-center">
               <div className="w-full max-w-3xl">
-                <SearchBar />
+                <Suspense fallback={<div className="h-12 w-full rounded-full bg-primary-50" />}>
+                  <SearchBar />
+                </Suspense>
               </div>
             </div>
 
@@ -149,7 +151,9 @@ export default function Navbar({
 
             {/* Search Row */}
             <div className="mt-4 border-t border-primary-100 pt-4">
-              <SearchBar />
+              <Suspense fallback={<div className="h-12 w-full rounded-full bg-primary-50" />}>
+                <SearchBar />
+              </Suspense>
             </div>
           </div>
         </div>
