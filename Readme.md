@@ -406,7 +406,7 @@ setelah user memilih ingin melakukan pembayaran menggunakan apa dan berhasil mak
 **PROCESS**
 - disini sistem webhook akan berjalan sesuai dari return data dari xendit, jika ada perubahan maka sistem akan melakukan insert data pada column database
 
-### CASE 2
+#### CASE 2
 <p align="center">
   <a href="" rel="noopener">
  <img  src="https://files.catbox.moe/w2wd1l.png" alt="dashboard"></a>
@@ -442,7 +442,7 @@ setelah user memilih ingin melakukan pembayaran menggunakan apa dan berhasil mak
 **PROCESS**
 - disini sistem webhook akan berjalan sesuai dari return data dari xendit, jika ada perubahan maka sistem akan melakukan insert data pada column database
 
-## Admin
+#### Admin
 
 <p align="center">
   <a href="" rel="noopener">
@@ -494,6 +494,20 @@ pada halaman orders disini admin bisa melihat orderan dan mengantur status order
 </p>
 
 pada halaman users admin bisa menambahkan user
+
+### 3 KONFIGURASI Xendit & Webhook
+
+- Pertama user login terlebih dahulu jika tidak memiliki account user bisa daftar
+- Pada Halaman dashboard xendit / Beranda Utama Xendit Click Atur Api Keys
+- lalu click buat secret key baru
+- isi nama api key bebas
+- Izin pilih Produk menerima pembayaran ( write ), Transaction (Read), yang lainnya none
+- click Buat Key
+- Selanjutnya salin Public Key lalu simpan pada env backend
+- Untuk Mendapatkan Webhooks masukan password anda terlebih dahulu nanti ambil Token verifikasi webhook dan simpan pada env
+- Untuk Url webhooks cukup isi, FVA terbayarkan, FVA dibuat dan diperbaharui, Invoices Terbayarkan dan click 2 opsi yang dibawah tersebut
+- untuk url webhooks `http://example.com/api/xendit/webhook`
+
 
 
 
