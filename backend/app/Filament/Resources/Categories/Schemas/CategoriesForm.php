@@ -22,8 +22,7 @@ class CategoriesForm
                 TextInput::make('slug')
                     ->label('Slug')
                     ->required()
-                    ->unique(ignoreRecord: true)
-                    ->disabled(),
+                    ->unique(ignoreRecord: true),
             ]);
     }
 }
